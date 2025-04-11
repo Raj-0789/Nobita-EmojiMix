@@ -1,0 +1,10 @@
+{
+  "name": "emojimix-api",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "api/emojimix.js",
+  "dependencies": {
+    "canvas": "^2.11.2",
+    "twemoji": "^14.0.2"
+  }
+}
