@@ -1,32 +1,32 @@
-import { createCanvas, loadImage } from 'canvas';
-import twemoji from 'twemoji';
+import express from "express";
+import fetch from "node-fetch";
 
-function getEmojiURL(emoji) {
-  const code = twemoji.convert.toCodePoint(emoji);
-  return `https://twemoji.maxcdn.com/v/latest/72x72/${code}.png`;
-}
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-export default async function handler(req, res) {
+app.get("/api/emojimix", async (req, res) => {
   const { emoji1, emoji2 } = req.query;
 
   if (!emoji1 || !emoji2) {
-    return res.status(400).send("Missing emoji1 or emoji2");
+    return res.status(400).json({ error: "Please provide emoji1 and emoji2 in query." });
   }
+
+  const encode = encodeURIComponent;
+  const url = `https://www.gstatic.com/android/keyboard/emojikitchen/${getEmojiCode(emoji1)}/${getEmojiCode(emoji1)}_${getEmojiCode(emoji2)}.png`;
 
   try {
-    const canvas = createCanvas(256, 256);
-    const ctx = canvas.getContext("2d");
-
-    const img1 = await loadImage(getEmojiURL(emoji1));
-    const img2 = await loadImage(getEmojiURL(emoji2));
-
-    ctx.drawImage(img1, 0, 0, 256, 256);
-    ctx.globalAlpha = 0.6;
-    ctx.drawImage(img2, 0, 0, 256, 256);
-
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Image not found");
+    const buffer = await response.arrayBuffer();
     res.setHeader("Content-Type", "image/png");
-    res.send(canvas.toBuffer("image/png"));
+    res.send(Buffer.from(buffer));
   } catch (err) {
-    res.status(500).send("Error generating emoji mix");
+    res.status(500).json({ error: "Unable to fetch emoji mix image." });
   }
+});
+
+function getEmojiCode(emoji) {
+  return [...emoji].map(char => char.codePointAt(0).toString(16)).join("-");
 }
+
+app.listen(PORT, () => console.log("EmojiMix API running on port", PORT));
