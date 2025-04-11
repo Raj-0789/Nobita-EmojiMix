@@ -1,10 +1,13 @@
 {
-  "name": "emojimix-api",
+  "name": "nobita-emojimix",
   "version": "1.0.0",
   "type": "module",
-  "main": "api/emojimix.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node api/emojimix.js"
+  },
   "dependencies": {
-    "canvas": "^2.11.2",
-    "twemoji": "^14.0.2"
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2"
   }
 }
